@@ -20,6 +20,9 @@ cropCheck.checked
 cropCheck.onchange = ({ target }) => {
 	cropVals.style.display = target.checked ? "flex" : "none";
 	cropVals.style.opacity = target.checked ? 100 : 0;
+	document.querySelector(".centerContainer").style.display = target.checked
+		? "flex"
+		: "none";
 };
 cropSizeRange.onchange = ({ target }) => {
 	document.querySelector("#cropHeightVal").innerText = target.value + "%";
