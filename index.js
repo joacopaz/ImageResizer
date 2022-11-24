@@ -60,10 +60,6 @@ const resizer = (
 	const loader = document.querySelector("#loading");
 	loader.style.opacity = 100;
 
-	// We want to know if we are cropping and by how much (%)
-	const crop = cropCheck.checked;
-	const cropSize = cropSizeRange.value / 100 || 0;
-
 	// Since this is a sketch of the function, we delete the output contents before rendering new ones just in case we re-run the function multiple times
 	outputContainer.innerHTML = "";
 	document.getElementById("download-container").innerHTML = "";
@@ -89,7 +85,7 @@ const resizer = (
 		// results is created for this example to download a zip file, delete if no download is intended
 		const results = [];
 		image.onload = ({ target }) => {
-			if (crop) {
+			if (g.crop) {
 				// EXPERIMENTING -----------------------------------------------------
 				// preprocessing image to get scaled down preview image for cropping
 				outputContainer.style.alignItems = "center";
@@ -228,7 +224,7 @@ const resizer = (
 					);
 					zip.generateAsync({ type: "blob" }).then(function callback(zip) {
 						let btn;
-						document.querySelector(".run").textContent = "Run";
+						g.run.textContent = "Run";
 						interObserver.disconnect();
 						interObserver = "";
 						console.log(`Compressed at ${quality * 100}%`);

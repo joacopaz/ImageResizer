@@ -1,33 +1,31 @@
-//#region setters
-
-// Crop checkbox
-document.querySelector(".run").onclick = (e) => {
-	resizer();
+//#region Global declares
+const g = {
+	cropCheck: document.getElementById("crop"),
+	cropVals: document.getElementById("cropVals"),
+	cropSizeRange: document.getElementById("cropHeight"), // checked up to here
+	cropLabel: document.querySelector("#cropHeightVal"),
+	run: document.querySelector(".run"),
+	center: document.querySelector(".centerContainer"),
+	crop: null,
+	img: null,
+	currentSelector: null,
+	interObserver: null,
 };
 
-const cropCheck = document.getElementById("crop");
-const cropVals = document.getElementById("cropVals");
-const cropSizeRange = document.getElementById("cropHeight");
-document.querySelector("#cropHeightVal").innerText = cropSizeRange.value + "%";
-
-cropCheck.checked
-	? (cropVals.style.display = "flex")
-	: (cropVals.style.display = "none");
-cropCheck.checked
-	? (cropVals.style.opacity = 100)
-	: (cropVals.style.opacity = 0);
-
-cropCheck.onchange = ({ target }) => {
-	cropVals.style.display = target.checked ? "flex" : "none";
-	cropVals.style.opacity = target.checked ? 100 : 0;
+// Listeners and functions
+g.run.onclick = (e) => {
+	resizer();
+};
+g.cropCheck.onchange = ({ target }) => {
+	g.cropVals.style.display = target.checked ? "flex" : "none";
+	g.cropVals.style.opacity = target.checked ? 100 : 0;
 	document.querySelector(".centerContainer").style.display = target.checked
 		? "flex"
 		: "none";
 };
-cropSizeRange.onchange = ({ target }) => {
-	document.querySelector("#cropHeightVal").innerText = target.value + "%";
+g.cropSizeRange.onchange = ({ target }) => {
+	g.cropLabel.innerText = target.value + "%";
 };
-
 const dragElement = (ele) => {
 	let pos1 = 0,
 		pos2 = 0,
@@ -66,9 +64,9 @@ const dragElement = (ele) => {
 		const selectorWidth = parseInt(currentSelector.style.width);
 
 		// set the element's new position:
-		if (top >= 0 && selectorHeight + top <= globalImg.height)
+		if (top >= 0 && selectorHeight + top <= g.img.height)
 			ele.style.top = top + "px";
-		if (left >= 0 && selectorWidth + left <= globalImg.width)
+		if (left >= 0 && selectorWidth + left <= g.img.width)
 			ele.style.left = left + "px";
 	}
 
@@ -86,7 +84,6 @@ const dragElement = (ele) => {
 			document.getElementById("cropSelect").checked = false;
 	}
 };
-
 const fixOverflow = (selector, image, canvas) => {
 	if (parseInt(selector.style.width) > image.width) {
 		console.log("Overflow Width! Adjusting");
@@ -95,11 +92,11 @@ const fixOverflow = (selector, image, canvas) => {
 		// );
 		const overflow = parseInt(selector.style.width) - image.width;
 		const ratio = 1 - overflow / parseInt(selector.style.width);
-		cropSizeRange.value = cropSizeRange.value * ratio;
-		selector.style.height = canvas.height * (cropSizeRange.value / 100) + "px";
-		selector.style.width = canvas.width * (cropSizeRange.value / 100) + "px";
-		document.querySelector("#cropHeightVal").textContent =
-			cropSizeRange.value + "%";
+		g.cropSizeRange.value = g.cropSizeRange.value * ratio;
+		selector.style.height =
+			canvas.height * (g.cropSizeRange.value / 100) + "px";
+		selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
+		g.cropLabel.textContent = g.cropSizeRange.value + "%";
 		// console.log(
 		// 	`AFTER: \nSelector W: ${selector.style.width} H: ${selector.style.height}`
 		// );
@@ -112,23 +109,30 @@ const fixOverflow = (selector, image, canvas) => {
 		// );
 		const overflow = parseInt(selector.style.height) - image.height;
 		const ratio = 1 - overflow / parseInt(selector.style.height);
-		cropSizeRange.value = cropSizeRange.value * ratio;
-		selector.style.height = canvas.height * (cropSizeRange.value / 100) + "px";
-		selector.style.width = canvas.width * (cropSizeRange.value / 100) + "px";
-		document.querySelector("#cropHeightVal").textContent =
-			cropSizeRange.value + "%";
+		g.cropSizeRange.value = g.cropSizeRange.value * ratio;
+		selector.style.height =
+			canvas.height * (g.cropSizeRange.value / 100) + "px";
+		selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
+		g.cropLabel.textContent = g.cropSizeRange.value + "%";
 		// console.log(
 		// 	`AFTER: \nSelector W: ${selector.style.width} H: ${selector.style.height}`
 		// );
 	}
 };
 
+// Onload events
+g.cropLabel.innerText = g.cropSizeRange.value + "%";
+g.cropCheck.checked
+	? (g.cropVals.style.display = "flex")
+	: (g.cropVals.style.display = "none");
+g.cropCheck.checked
+	? (g.cropVals.style.opacity = 100)
+	: (g.cropVals.style.opacity = 0);
+g.crop = g.cropCheck.checked;
+
 //#endregion
 
-let globalImg;
-let currentSelector;
-let interObserver;
-// Start
+// Main function
 const handleCropping = ({
 	image,
 	canvas,
@@ -140,29 +144,28 @@ const handleCropping = ({
 }) => {
 	if (currentStep || currentStep === 0) currentStep += 1;
 	if (!currentStep) currentStep = 0;
-	const run = document.querySelector(".run");
-	run.textContent = "Select";
-	const center = document.querySelector(".centerContainer");
+	g.run.textContent = "Select";
+
 	if (!interObserver) {
 		interObserver = new IntersectionObserver(
 			(entry) => {
 				if (!entry[0].isIntersecting) {
-					run.style.position = "fixed";
-					run.style.top = "0.2vh";
-					center.style.position = "fixed";
-					center.style.top = "8vh";
-					center.style.fontSize = "1vmax";
-					center.style.padding = "0.4rem";
-					center.style.border = "white 1px solid";
+					g.run.style.position = "fixed";
+					g.run.style.top = "0.2vh";
+					g.center.style.position = "fixed";
+					g.center.style.top = "8vh";
+					g.center.style.fontSize = "1vmax";
+					g.center.style.padding = "0.4rem";
+					g.center.style.border = "white 1px solid";
 				} else if (entry[0].isIntersecting) {
-					if (run.style.position === "fixed") {
-						run.style.position = "";
-						run.style.top = "";
-						center.style.position = "";
-						center.style.top = "";
-						center.style.fontSize = "";
-						center.style.padding = "";
-						center.style.border = "";
+					if (g.run.style.position === "fixed") {
+						g.run.style.position = "";
+						g.run.style.top = "";
+						g.center.style.position = "";
+						g.center.style.top = "";
+						g.center.style.fontSize = "";
+						g.center.style.padding = "";
+						g.center.style.border = "";
 					}
 				}
 			},
@@ -175,13 +178,13 @@ const handleCropping = ({
 	container.classList.add("prev");
 	// container.classList.add("preview");
 	container.appendChild(image);
-	globalImg = image;
+	g.img = image;
 	const selector = document.createElement("div");
 	currentSelector = selector;
 	selector.classList.add("selector");
 
-	selector.style.width = canvas.width * (cropSizeRange.value / 100) + "px";
-	selector.style.height = canvas.height * (cropSizeRange.value / 100) + "px";
+	selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
+	selector.style.height = canvas.height * (g.cropSizeRange.value / 100) + "px";
 
 	fixOverflow(selector, image, canvas);
 
@@ -197,9 +200,9 @@ const handleCropping = ({
 	croppedVals[currentStep].width = parseInt(selector.style.width);
 	croppedVals[currentStep].height = parseInt(selector.style.height);
 
-	cropSizeRange.onchange = ({ target }) => {
-		document.querySelector("#cropHeightVal").innerText = target.value + "%";
-		const index = cropSizeRange.value / 100;
+	g.cropSizeRange.onchange = ({ target }) => {
+		g.cropLabel.innerText = target.value + "%";
+		const index = g.cropSizeRange.value / 100;
 		if (!cropCenter) selector.style.left = 0;
 		if (!cropCenter) selector.style.top = 0;
 		selector.style.width = canvas.width * index + "px";
