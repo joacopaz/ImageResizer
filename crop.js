@@ -106,7 +106,7 @@ const fixOverflow = (selector, image, canvas) => {
 	}
 
 	if (parseInt(selector.style.height) > image.height) {
-		// console.log("Overflow Height! Adjusting");
+		console.log("Overflow Height! Adjusting");
 		// console.log(
 		// 	`BEFORE: \nImage W: ${image.width} H: ${image.height}\nSelector W: ${selector.style.width} H: ${selector.style.height}`
 		// );
@@ -141,17 +141,19 @@ const handleCropping = ({
 	if (currentStep || currentStep === 0) currentStep += 1;
 	if (!currentStep) currentStep = 0;
 	const run = document.querySelector(".run");
+	run.textContent = "Select";
 	const center = document.querySelector(".centerContainer");
 	if (!interObserver) {
 		interObserver = new IntersectionObserver(
 			(entry) => {
 				if (!entry[0].isIntersecting) {
 					run.style.position = "fixed";
-					run.style.top = "1vh";
+					run.style.top = "0.2vh";
 					center.style.position = "fixed";
 					center.style.top = "8vh";
 					center.style.fontSize = "1vmax";
-					center.style.padding = "1rem";
+					center.style.padding = "0.4rem";
+					center.style.border = "white 1px solid";
 				} else if (entry[0].isIntersecting) {
 					if (run.style.position === "fixed") {
 						run.style.position = "";
@@ -160,6 +162,7 @@ const handleCropping = ({
 						center.style.top = "";
 						center.style.fontSize = "";
 						center.style.padding = "";
+						center.style.border = "";
 					}
 				}
 			},
@@ -215,8 +218,6 @@ const handleCropping = ({
 		croppedVals[currentStep].topOffset = Math.abs(
 			Math.floor((container.offsetHeight - selector.offsetHeight) / 2)
 		);
-		console.log(croppedVals[currentStep].leftOffset);
-		console.log(croppedVals[currentStep].topOffset);
 		selector.style.left = croppedVals[currentStep].leftOffset + "px";
 		selector.style.top = croppedVals[currentStep].topOffset + "px";
 		autocrop = document.querySelector("#cropSelect").checked;
@@ -229,7 +230,6 @@ const handleCropping = ({
 					croppedVals[currentStep].leftOffset = Math.floor(
 						(container.offsetWidth - mutation.addedNodes[0].offsetWidth) / 2
 					);
-					console.log(mutation.addedNodes[0]);
 					croppedVals[currentStep].topOffset = Math.abs(
 						Math.floor(
 							(container.offsetHeight - mutation.addedNodes[0].offsetHeight) / 2

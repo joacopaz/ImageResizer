@@ -228,6 +228,7 @@ const resizer = (
 					);
 					zip.generateAsync({ type: "blob" }).then(function callback(zip) {
 						let btn;
+						document.querySelector(".run").textContent = "Run";
 						interObserver.disconnect();
 						interObserver = "";
 						console.log(`Compressed at ${quality * 100}%`);
