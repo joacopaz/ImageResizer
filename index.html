@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="author" content="Joaquín Paz" />
+	<meta name="description" content="Custom image resizer for DTV-Go" />
+	<meta name="favicon" content="./dtvgo.png">
+	<link rel="stylesheet" href="index.css" />
+	<script src="./jszip.min.js" defer></script>
+	<script src="./crop.js" defer></script>
+	<script src="./index.js" defer></script>
+	<title>VLS Image Resizer</title>
+</head>
+
+<body>
+	<h1>VLS Image Resizer</h1>
+	<fieldset>
+		<label for="input">Input</label>
+		<input type="file" id="input" name="input" accept="image/*" />
+		<div class="crop">
+			<div class="qualityContainer">
+				<label for="quality">Quality </label><span id="quality">%</span><input type="range" min="1" max="98"
+					name="qualityRange" id="qualityRange" value="98">
+			</div>
+			<label for="maxOutput">Max Size (pxs)</label><input type="number" name="maxOutput" id="maxOutput"
+				value="1980">
+			<div class="checkCrop"><label for="crop">Crop</label><input type="checkbox" name="crop" id="crop" checked>
+			</div>
+			<div class="centerContainer"><label for="cropSelect">Center</label><input type="checkbox" name="cropSelect"
+					checked id="cropSelect">
+			</div>
+			<div id="cropVals">
+				<div>
+					<label for="cropHeight">Crop Size <span id="cropHeightVal"></span></label><input type="range"
+						step="0.1" min="1" max="100" name="cropHeight" id="cropHeight" value="100">
+				</div>
+			</div>
+
+		</div>
+		<div class="buttons">
+			<button class="run">Run</button>
+		</div>
+	</fieldset>
+	</fieldset>
+	<fieldset>
+		<label for="output">Output
+			<div id="output" name="output">Awaiting file input</div>
+	</fieldset>
+	<div id="download-container"></div>
+	<div id="loading">Loading<div class="lds-ring">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+
+</body>
+
+</html>
