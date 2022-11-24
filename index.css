@@ -48,6 +48,7 @@ h3 {
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
+	background-color: #081a2b;
 }
 #input {
 	width: 350px;
