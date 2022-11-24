@@ -42,12 +42,13 @@ h3 {
 
 #input,
 #output {
-	margin: 1rem;
+	margin: 1rem auto;
 	font-size: 1rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-wrap: wrap;
+	width: 200px;
 }
 label[for="input"],
 label[for="output"] {
