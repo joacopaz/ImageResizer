@@ -29,7 +29,7 @@ const dragElement = (ele) => {
 		// get the mouse cursor position at startup:
 		pos3 = e.clientX;
 		pos4 = e.clientY;
-		console.log(pos1, pos2, pos3, pos4);
+		// console.log(pos1, pos2, pos3, pos4);
 		document.onmouseup = closeDragElement;
 		// call a function whenever the cursor moves:
 		document.onmousemove = elementDrag;
@@ -112,6 +112,7 @@ const handleCropping = ({
 		g.currentStep = 0;
 		g.centerContainer.style.display = "flex";
 		g.cropSizeContainer.style.display = "flex";
+		g.input.style.display = "none";
 	}
 	g.run.textContent = "Select";
 
@@ -155,7 +156,7 @@ const handleCropping = ({
 			},
 			{ rootMargin: "0px", threshold: 1.0 }
 		);
-		g.observer.observe(document.querySelector(".buttons"));
+		g.observer.observe(document.querySelector("fieldset"));
 	}
 	g.selectorContainer = document.createElement("div");
 	g.selectorContainer.classList.add("imgContainer");

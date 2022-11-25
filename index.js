@@ -191,6 +191,7 @@ const resizer = (
 						g.currentStep = null;
 						g.qualityContainer.style.display = "flex";
 						g.maxOutputContainer.style.display = "flex";
+						g.input.style.display = "flex";
 						g.isCropContainer.style.display = "flex";
 						g.outputValues = [];
 						g.download.onclick = () => {
@@ -275,6 +276,7 @@ const resizer = (
 				g.currentStep = null;
 				g.qualityContainer.style.display = "flex";
 				g.maxOutputContainer.style.display = "flex";
+				g.input.style.display = "flex";
 				g.isCropContainer.style.display = "flex";
 				g.outputValues = [];
 				g.download.onclick = () => {
