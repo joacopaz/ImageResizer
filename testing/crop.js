@@ -1,20 +1,20 @@
 // Crop checkbox
 
 const cropCheck = document.getElementById("crop");
-const cropVals = document.getElementById("cropVals");
+const cropSizeContainer = document.getElementById("cropVals");
 const cropSizeRange = document.getElementById("cropHeight");
 document.querySelector("#cropHeightVal").innerText = cropSizeRange.value + "%";
 
 cropCheck.checked
-	? (cropVals.style.display = "flex")
-	: (cropVals.style.display = "none");
+	? (cropSizeContainer.style.display = "flex")
+	: (cropSizeContainer.style.display = "none");
 cropCheck.checked
-	? (cropVals.style.opacity = 100)
-	: (cropVals.style.opacity = 0);
+	? (cropSizeContainer.style.opacity = 100)
+	: (cropSizeContainer.style.opacity = 0);
 
 cropCheck.onchange = ({ target }) => {
-	cropVals.style.display = target.checked ? "flex" : "none";
-	cropVals.style.opacity = target.checked ? 100 : 0;
+	cropSizeContainer.style.display = target.checked ? "flex" : "none";
+	cropSizeContainer.style.opacity = target.checked ? 100 : 0;
 };
 cropSizeRange.onchange = ({ target }) =>
 	(document.querySelector("#cropHeightVal").innerText = target.value + "%");

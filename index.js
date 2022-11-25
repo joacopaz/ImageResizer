@@ -1,61 +1,15 @@
-let currentStep;
-let croppedVals = [];
-alert()
-// File input container
-const input = document.getElementById("input");
-
-// Output container
-const output = document.getElementById("output");
-
-// Array of image ratios (Width, Height)
-const arrayOfOutputRatios = [
-	{ w: 16, h: 9 },
-	{ w: 4, h: 3 },
-	{ w: 3, h: 4 },
-	{ w: 2, h: 3 },
-];
-// Max output (side in pxs), function will prioritize larger side
-let maxOutput = document.querySelector("#maxOutput").value;
-document
-	.querySelector("#maxOutput")
-	.addEventListener(
-		"input",
-		({ target }) => (maxOutput = target.valueAsNumber)
-	);
-
-// Automatically Crop Center
-let autocrop = document.querySelector("#cropSelect").checked;
-document
-	.querySelector("#cropSelect")
-	.addEventListener(
-		"change",
-		({ target }) => (autocrop = document.querySelector("#cropSelect").checked)
-	);
-
-// Quality compression (from 0 to 1)
-const qualityRange = document.querySelector("#qualityRange");
-const qualityTag = document.querySelector("#quality");
-let quality = qualityRange.value / 100; // can range from 0.1 for 10% and 1 for 100%
-qualityTag.textContent = `${quality * 100}%`;
-qualityRange.onchange = ({ target }) => {
-	quality = target.value / 100;
-	qualityTag.textContent = `${quality * 100}%`;
-};
-
-// Resizing function to run
 const resizer = (
-	inputContainer = input, // where the file is
-	outputContainer = output, // where to draw/show imgs
-	arrayOfRatios = arrayOfOutputRatios, // output ratios
-	maxOutputPxs = maxOutput, // max side length in pxs
-	qualityPercent = quality, // 0 to 1
-	cropCenter = autocrop
+	inputContainer = g.input, // where the file is
+	outputContainer = g.output, // where to draw/show imgs
+	arrayOfRatios = g.arrayOfOutputRatios, // output ratios
+	maxOutputPxs = g.maxOutput, // max side length in pxs
+	qualityPercent = g.quality, // 0 to 1
+	cropCenter = g.cropCenter
 ) => {
 	if (!inputContainer?.files[0]) return alert("Please select a File");
 	if (!arrayOfRatios || arrayOfRatios.length === 0)
 		return alert("DebugLog: Specify expected output ratios for the function");
-	if (document.querySelector(".download"))
-		document.querySelector(".download").style.display = "none";
+	if (g.download) g.download.style.display = "none";
 	// Start loading animation
 	const loader = document.querySelector("#loading");
 	loader.style.opacity = 100;
@@ -85,7 +39,7 @@ const resizer = (
 		// results is created for this example to download a zip file, delete if no download is intended
 		const results = [];
 		image.onload = ({ target }) => {
-			if (g.crop) {
+			if (g.cropValue) {
 				// EXPERIMENTING -----------------------------------------------------
 				// preprocessing image to get scaled down preview image for cropping
 				outputContainer.style.alignItems = "center";
@@ -123,8 +77,8 @@ const resizer = (
 								: maxOutputPxs / ratio.h;
 						canvas.width = unit * ratio.w;
 						canvas.height = unit * ratio.h;
-						if (!currentStep || currentStep + 1 < arrayOfRatios.length) {
-							if (!currentStep && currentStep !== 0 && i === 0) {
+						if (!g.currentStep || g.currentStep + 1 < arrayOfRatios.length) {
+							if (!g.currentStep && g.currentStep !== 0 && i === 0) {
 								return handleCropping({
 									image: preproImg,
 									canvas,
@@ -135,7 +89,7 @@ const resizer = (
 									cropCenter,
 								});
 							}
-							if (currentStep + 1 === i) {
+							if (g.currentStep + 1 === i) {
 								return handleCropping({
 									image: preproImg,
 									canvas,
@@ -146,32 +100,34 @@ const resizer = (
 									cropCenter,
 								});
 							}
-							if (currentStep + 1 !== i) {
+							if (g.currentStep + 1 !== i) {
 								continue;
 							}
 						} else {
 							if (i + 1 === arrayOfRatios.length) {
 								let string;
-								croppedVals.forEach(
+								g.outputValues.forEach(
 									(e) =>
 										(string += `L: ${e.leftOffset} T: ${e.topOffset} W: ${e.width} H: ${e.height}`)
 								);
 							}
 						}
 
-						if (Number.isNaN(croppedVals[i].leftOffset))
-							croppedVals[i].leftOffset = 0;
-						if (Number.isNaN(croppedVals[i].topOffset))
-							croppedVals[i].topOffset = 0;
-						if (Number.isNaN(croppedVals[i].width)) croppedVals[i].width = 0;
-						if (Number.isNaN(croppedVals[i].height)) croppedVals[i].height = 0;
+						if (Number.isNaN(g.outputValues[i].leftOffset))
+							g.outputValues[i].leftOffset = 0;
+						if (Number.isNaN(g.outputValues[i].topOffset))
+							g.outputValues[i].topOffset = 0;
+						if (Number.isNaN(g.outputValues[i].width))
+							g.outputValues[i].width = 0;
+						if (Number.isNaN(g.outputValues[i].height))
+							g.outputValues[i].height = 0;
 
 						context.drawImage(
 							preproImg,
-							croppedVals[i].leftOffset, // new X coordinate to start crop on original
-							croppedVals[i].topOffset, // new Y coordinate to start crop on original
-							croppedVals[i].width, // cropWidth
-							croppedVals[i].height, // cropHeight
+							g.outputValues[i].leftOffset, // new X coordinate to start crop on original
+							g.outputValues[i].topOffset, // new Y coordinate to start crop on original
+							g.outputValues[i].width, // cropWidth
+							g.outputValues[i].height, // cropHeight
 							0,
 							0,
 							canvas.width, // newWidth
@@ -194,9 +150,9 @@ const resizer = (
 						const header = document.createElement("h2");
 						header.textContent = `${ratio.w}x${ratio.h}`;
 						container.appendChild(header);
-						output.style.flexDirection = "row";
-						output.style.alignItems = "flex-end";
-						output.appendChild(container);
+						g.output.style.flexDirection = "row";
+						g.output.style.alignItems = "flex-end";
+						g.output.appendChild(container);
 					}
 
 					// Adapting imageUrl to promise for zip
@@ -223,23 +179,22 @@ const resizer = (
 						)
 					);
 					zip.generateAsync({ type: "blob" }).then(function callback(zip) {
-						let btn;
-						g.run.textContent = "Run";
-						interObserver.disconnect();
-						interObserver = "";
-						console.log(`Compressed at ${quality * 100}%`);
-						if (!document.querySelector(".download")) {
-							btn = document.createElement("button");
-						} else {
-							btn = document.querySelector(".download");
-							btn.style.display = "block";
+						if (g.observer) {
+							g.observer.disconnect();
+							g.observer = "";
 						}
-						btn.textContent = "Download";
-						btn.classList.add("download");
-						document.querySelector(".buttons").appendChild(btn);
-						currentStep = null;
-						croppedVals = [];
-						btn.onclick = () => {
+						console.log(`Compressed at ${quality * 100}%`);
+						if (!g.download) {
+							g.download = document.createElement("button");
+							g.download.textContent = "Download";
+							g.download.classList.add("download");
+							document.querySelector(".buttons").appendChild(g.download);
+						} else {
+							g.download.style.display = "block";
+						}
+						g.currentStep = null;
+						g.outputValues = [];
+						g.download.onclick = () => {
 							saveAs(zip, `${name}.zip`);
 						};
 						loader.style.opacity = "";
@@ -280,9 +235,9 @@ const resizer = (
 				const header = document.createElement("h2");
 				header.textContent = `${ratio.w}x${ratio.h}`;
 				container.appendChild(header);
-				output.style.flexDirection = "row";
-				output.style.alignItems = "flex-end";
-				output.appendChild(container);
+				g.output.style.flexDirection = "row";
+				g.output.style.alignItems = "flex-end";
+				g.output.appendChild(container);
 			}
 
 			// Adapting imageUrl to promise for zip
@@ -305,34 +260,26 @@ const resizer = (
 				})
 			);
 			zip.generateAsync({ type: "blob" }).then(function callback(zip) {
-				let btn;
-				if (interObserver) {
-					interObserver.disconnect();
-					interObserver = "";
+				if (g.observer) {
+					g.observer.disconnect();
+					g.observer = "";
 				}
 				console.log(`Compressed at ${quality * 100}%`);
-				if (!document.querySelector(".download")) {
-					btn = document.createElement("button");
+				if (!g.download) {
+					g.download = document.createElement("button");
+					g.download.textContent = "Download";
+					g.download.classList.add("download");
+					document.querySelector(".buttons").appendChild(g.download);
 				} else {
-					btn = document.querySelector(".download");
+					g.download.style.display = "block";
 				}
-				btn.textContent = "Download";
-				btn.classList.add("download");
-				document.querySelector(".buttons").appendChild(btn);
-				currentStep = null;
-				croppedVals = [];
-				btn.onclick = () => {
+				g.currentStep = null;
+				g.outputValues = [];
+				g.download.onclick = () => {
 					saveAs(zip, `${name}.zip`);
 				};
 				loader.style.opacity = "";
 			});
 		};
 	};
-};
-
-// Function will run when input file changes
-input.onchange = () => {
-	currentStep = null;
-	croppedVals = [];
-	resizer();
 };

@@ -1,31 +1,3 @@
-//#region Global declares
-const g = {
-	cropCheck: document.getElementById("crop"),
-	cropVals: document.getElementById("cropVals"),
-	cropSizeRange: document.getElementById("cropHeight"), // checked up to here
-	cropLabel: document.querySelector("#cropHeightVal"),
-	run: document.querySelector(".run"),
-	center: document.querySelector(".centerContainer"),
-	crop: null,
-	img: null,
-	currentSelector: null,
-	interObserver: null,
-};
-
-// Listeners and functions
-g.run.onclick = (e) => {
-	resizer();
-};
-g.cropCheck.onchange = ({ target }) => {
-	g.cropVals.style.display = target.checked ? "flex" : "none";
-	g.cropVals.style.opacity = target.checked ? 100 : 0;
-	document.querySelector(".centerContainer").style.display = target.checked
-		? "flex"
-		: "none";
-};
-g.cropSizeRange.onchange = ({ target }) => {
-	g.cropLabel.innerText = target.value + "%";
-};
 const dragElement = (ele) => {
 	let pos1 = 0,
 		pos2 = 0,
@@ -60,8 +32,8 @@ const dragElement = (ele) => {
 		pos4 = e.clientY;
 		const top = parseInt(ele.offsetTop - pos2);
 		const left = parseInt(ele.offsetLeft - pos1);
-		const selectorHeight = parseInt(currentSelector.style.height);
-		const selectorWidth = parseInt(currentSelector.style.width);
+		const selectorHeight = parseInt(g.selector.style.height);
+		const selectorWidth = parseInt(g.selector.style.width);
 
 		// set the element's new position:
 		if (top >= 0 && selectorHeight + top <= g.img.height)
@@ -76,10 +48,10 @@ const dragElement = (ele) => {
 		document.onmousemove = null;
 
 		const selector = document.querySelector(".selector");
-		croppedVals[currentStep].leftOffset = parseInt(selector.style.left);
-		croppedVals[currentStep].topOffset = parseInt(selector.style.top);
-		croppedVals[currentStep].width = parseInt(selector.style.width);
-		croppedVals[currentStep].height = parseInt(selector.style.height);
+		g.outputValues[g.currentStep].leftOffset = parseInt(selector.style.left);
+		g.outputValues[g.currentStep].topOffset = parseInt(selector.style.top);
+		g.outputValues[g.currentStep].width = parseInt(selector.style.width);
+		g.outputValues[g.currentStep].height = parseInt(selector.style.height);
 		if (document.getElementById("cropSelect").checked)
 			document.getElementById("cropSelect").checked = false;
 	}
@@ -96,7 +68,7 @@ const fixOverflow = (selector, image, canvas) => {
 		selector.style.height =
 			canvas.height * (g.cropSizeRange.value / 100) + "px";
 		selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
-		g.cropLabel.textContent = g.cropSizeRange.value + "%";
+		g.cropSizeLabel.textContent = g.cropSizeRange.value + "%";
 		// console.log(
 		// 	`AFTER: \nSelector W: ${selector.style.width} H: ${selector.style.height}`
 		// );
@@ -113,24 +85,12 @@ const fixOverflow = (selector, image, canvas) => {
 		selector.style.height =
 			canvas.height * (g.cropSizeRange.value / 100) + "px";
 		selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
-		g.cropLabel.textContent = g.cropSizeRange.value + "%";
+		g.cropSizeLabel.textContent = g.cropSizeRange.value + "%";
 		// console.log(
 		// 	`AFTER: \nSelector W: ${selector.style.width} H: ${selector.style.height}`
 		// );
 	}
 };
-
-// Onload events
-g.cropLabel.innerText = g.cropSizeRange.value + "%";
-g.cropCheck.checked
-	? (g.cropVals.style.display = "flex")
-	: (g.cropVals.style.display = "none");
-g.cropCheck.checked
-	? (g.cropVals.style.opacity = 100)
-	: (g.cropVals.style.opacity = 0);
-g.crop = g.cropCheck.checked;
-
-//#endregion
 
 // Main function
 const handleCropping = ({
@@ -142,36 +102,36 @@ const handleCropping = ({
 	arrayOfRatios,
 	cropCenter,
 }) => {
-	if (currentStep || currentStep === 0) currentStep += 1;
-	if (!currentStep) currentStep = 0;
+	if (g.currentStep || g.currentStep === 0) g.currentStep += 1;
+	if (!g.currentStep) g.currentStep = 0;
 	g.run.textContent = "Select";
 
-	if (!interObserver) {
-		interObserver = new IntersectionObserver(
+	if (!g.observer) {
+		g.observer = new IntersectionObserver(
 			(entry) => {
 				if (!entry[0].isIntersecting) {
 					g.run.style.position = "fixed";
 					g.run.style.top = "0.2vh";
-					g.center.style.position = "fixed";
-					g.center.style.top = "8vh";
-					g.center.style.fontSize = "1vmax";
-					g.center.style.padding = "0.4rem";
-					g.center.style.border = "white 1px solid";
+					g.centerContainer.style.position = "fixed";
+					g.centerContainer.style.top = "8vh";
+					g.centerContainer.style.fontSize = "1vmax";
+					g.centerContainer.style.padding = "0.4rem";
+					g.centerContainer.style.border = "white 1px solid";
 				} else if (entry[0].isIntersecting) {
 					if (g.run.style.position === "fixed") {
 						g.run.style.position = "";
 						g.run.style.top = "";
-						g.center.style.position = "";
-						g.center.style.top = "";
-						g.center.style.fontSize = "";
-						g.center.style.padding = "";
-						g.center.style.border = "";
+						g.centerContainer.style.position = "";
+						g.centerContainer.style.top = "";
+						g.centerContainer.style.fontSize = "";
+						g.centerContainer.style.padding = "";
+						g.centerContainer.style.border = "";
 					}
 				}
 			},
 			{ rootMargin: "0px", threshold: 1.0 }
 		);
-		interObserver.observe(document.querySelector(".buttons"));
+		g.observer.observe(document.querySelector(".buttons"));
 	}
 	const container = document.createElement("div");
 	container.classList.add("imgContainer");
@@ -180,68 +140,71 @@ const handleCropping = ({
 	container.appendChild(image);
 	g.img = image;
 	const selector = document.createElement("div");
-	currentSelector = selector;
+	// test
+	const inset = document.createElement("div");
+	inset.classList.add("inset");
+	//
+	g.selector = selector;
 	selector.classList.add("selector");
-
 	selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
 	selector.style.height = canvas.height * (g.cropSizeRange.value / 100) + "px";
 
 	fixOverflow(selector, image, canvas);
 
-	if (!croppedVals[currentStep])
-		croppedVals[currentStep] = {
+	if (!g.outputValues[g.currentStep])
+		g.outputValues[g.currentStep] = {
 			leftOffset: 0,
 			topOffset: 0,
 			width: 0,
 			height: 0,
-			quality: quality,
+			quality: g.quality,
 		};
 
-	croppedVals[currentStep].width = parseInt(selector.style.width);
-	croppedVals[currentStep].height = parseInt(selector.style.height);
+	g.outputValues[g.currentStep].width = parseInt(selector.style.width);
+	g.outputValues[g.currentStep].height = parseInt(selector.style.height);
 
 	g.cropSizeRange.onchange = ({ target }) => {
-		g.cropLabel.innerText = target.value + "%";
+		g.cropSizeLabel.innerText = target.value + "%";
 		const index = g.cropSizeRange.value / 100;
 		if (!cropCenter) selector.style.left = 0;
 		if (!cropCenter) selector.style.top = 0;
 		selector.style.width = canvas.width * index + "px";
 		selector.style.height = canvas.height * index + "px";
-		if (croppedVals[currentStep])
-			croppedVals[currentStep].width = parseInt(selector.style.width);
-		if (croppedVals[currentStep])
-			croppedVals[currentStep].height = parseInt(selector.style.height);
+		if (g.outputValues[g.currentStep])
+			g.outputValues[g.currentStep].width = parseInt(selector.style.width);
+		if (g.outputValues[g.currentStep])
+			g.outputValues[g.currentStep].height = parseInt(selector.style.height);
 		fixOverflow(selector, image, canvas);
 	};
 	document.querySelector("#cropSelect").onchange = (e) => {
 		if (!e.target.checked) return;
-		croppedVals[currentStep].leftOffset = Math.floor(
+		g.outputValues[g.currentStep].leftOffset = Math.floor(
 			(container.offsetWidth - selector.offsetWidth) / 2
 		);
-		croppedVals[currentStep].topOffset = Math.abs(
+		g.outputValues[g.currentStep].topOffset = Math.abs(
 			Math.floor((container.offsetHeight - selector.offsetHeight) / 2)
 		);
-		selector.style.left = croppedVals[currentStep].leftOffset + "px";
-		selector.style.top = croppedVals[currentStep].topOffset + "px";
-		autocrop = document.querySelector("#cropSelect").checked;
+		selector.style.left = g.outputValues[g.currentStep].leftOffset + "px";
+		selector.style.top = g.outputValues[g.currentStep].topOffset + "px";
+		g.cropCenter = document.querySelector("#cropSelect").checked;
 	};
 	if (cropCenter) {
 		const config = { childList: true };
 		const callback = (mutationList) => {
 			for (const mutation of mutationList) {
 				if (mutation.type === "childList") {
-					croppedVals[currentStep].leftOffset = Math.floor(
+					g.outputValues[g.currentStep].leftOffset = Math.floor(
 						(container.offsetWidth - mutation.addedNodes[0].offsetWidth) / 2
 					);
-					croppedVals[currentStep].topOffset = Math.abs(
+					g.outputValues[g.currentStep].topOffset = Math.abs(
 						Math.floor(
 							(container.offsetHeight - mutation.addedNodes[0].offsetHeight) / 2
 						)
 					);
-					selector.style.left = croppedVals[currentStep].leftOffset + "px";
-					selector.style.top = croppedVals[currentStep].topOffset + "px";
+					selector.style.left = g.outputValues[g.currentStep].leftOffset + "px";
+					selector.style.top = g.outputValues[g.currentStep].topOffset + "px";
 					// console.log(
-					// 	`L ${croppedVals[currentStep].leftOffset} T ${croppedVals[currentStep].topOffset}`
+					// 	`L ${g.croppedVals[g.currentStep].leftOffset} T ${g.croppedVals[g.currentStep].topOffset}`
 					// );
 				}
 			}
@@ -251,6 +214,7 @@ const handleCropping = ({
 	}
 
 	container.appendChild(selector);
+	selector.appendChild(inset);
 
 	const header = document.createElement("h3");
 	header.textContent = `Preview ${ratio.w}x${ratio.h} ${i + 1}/${
