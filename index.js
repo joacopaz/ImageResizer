@@ -1,6 +1,6 @@
 let currentStep;
 let croppedVals = [];
-
+alert()
 // File input container
 const input = document.getElementById("input");
 
