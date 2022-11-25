@@ -70,7 +70,10 @@ const dragElement = (ele) => {
 	}
 };
 const fixOverflow = (selector, image, canvas) => {
-	if (parseInt(selector.style.width) > image.width) {
+	if (
+		parseInt(selector.style.left) + parseInt(selector.style.width) >
+		image.width
+	) {
 		console.log("Overflow Width! Adjusting");
 		const overflow = parseInt(selector.style.width) - image.width;
 		const ratio = 1 - overflow / parseInt(selector.style.width);
@@ -82,7 +85,10 @@ const fixOverflow = (selector, image, canvas) => {
 		centerSelector();
 	}
 
-	if (parseInt(selector.style.height) > image.height) {
+	if (
+		parseInt(selector.style.top) + parseInt(selector.style.height) >
+		image.height
+	) {
 		console.log("Overflow Height! Adjusting");
 		const overflow = parseInt(selector.style.height) - image.height;
 		const ratio = 1 - overflow / parseInt(selector.style.height);
