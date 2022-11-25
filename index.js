@@ -11,14 +11,12 @@ const resizer = (
 		return alert("DebugLog: Specify expected output ratios for the function");
 	if (g.download) g.download.style.display = "none";
 	// Start loading animation
-	const loader = document.querySelector("#loading");
-	loader.style.opacity = 100;
+	g.loader.style.opacity = 100;
 
 	// Since this is a sketch of the function, we delete the output contents before rendering new ones just in case we re-run the function multiple times
 	outputContainer.innerHTML = "";
 	document.getElementById("download-container").innerHTML = "";
 	const file = inputContainer.files[0];
-
 	// We get the file name to rebuild the output file
 	const name = file.name.match(/(.+)\./)[1];
 
@@ -39,7 +37,7 @@ const resizer = (
 		// results is created for this example to download a zip file, delete if no download is intended
 		const results = [];
 		image.onload = ({ target }) => {
-			if (g.cropValue) {
+			if (g.isCrop.checked) {
 				// EXPERIMENTING -----------------------------------------------------
 				// preprocessing image to get scaled down preview image for cropping
 				outputContainer.style.alignItems = "center";
@@ -83,7 +81,6 @@ const resizer = (
 									image: preproImg,
 									canvas,
 									ratio,
-									loader,
 									i,
 									arrayOfRatios,
 									cropCenter,
@@ -94,7 +91,6 @@ const resizer = (
 									image: preproImg,
 									canvas,
 									ratio,
-									loader,
 									i,
 									arrayOfRatios,
 									cropCenter,
@@ -183,7 +179,7 @@ const resizer = (
 							g.observer.disconnect();
 							g.observer = "";
 						}
-						console.log(`Compressed at ${quality * 100}%`);
+						console.log(`Compressed at ${g.quality * 100}%`);
 						if (!g.download) {
 							g.download = document.createElement("button");
 							g.download.textContent = "Download";
@@ -193,11 +189,14 @@ const resizer = (
 							g.download.style.display = "block";
 						}
 						g.currentStep = null;
+						g.qualityContainer.style.display = "flex";
+						g.maxOutputContainer.style.display = "flex";
+						g.isCropContainer.style.display = "flex";
 						g.outputValues = [];
 						g.download.onclick = () => {
 							saveAs(zip, `${name}.zip`);
 						};
-						loader.style.opacity = "";
+						g.loader.style.opacity = "";
 					});
 				};
 				return;
@@ -264,7 +263,7 @@ const resizer = (
 					g.observer.disconnect();
 					g.observer = "";
 				}
-				console.log(`Compressed at ${quality * 100}%`);
+				console.log(`Compressed at ${g.quality * 100}%`);
 				if (!g.download) {
 					g.download = document.createElement("button");
 					g.download.textContent = "Download";
@@ -274,11 +273,14 @@ const resizer = (
 					g.download.style.display = "block";
 				}
 				g.currentStep = null;
+				g.qualityContainer.style.display = "flex";
+				g.maxOutputContainer.style.display = "flex";
+				g.isCropContainer.style.display = "flex";
 				g.outputValues = [];
 				g.download.onclick = () => {
 					saveAs(zip, `${name}.zip`);
 				};
-				loader.style.opacity = "";
+				g.loader.style.opacity = "";
 			});
 		};
 	};

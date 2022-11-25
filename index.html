@@ -31,8 +31,10 @@
 				<label for="quality">Quality </label><span id="quality">%</span><input type="range" min="1" max="98"
 					name="qualityRange" id="qualityRange" value="98">
 			</div>
-			<label for="maxOutput">Max Size (pxs)</label><input type="number" name="maxOutput" id="maxOutput"
-				value="1920">
+			<div class="maxSizeContainer">
+				<label for="maxOutput">Max Size (pxs)</label><input type="number" name="maxOutput" id="maxOutput"
+					value="1920" max="4000">
+			</div>
 			<div class="checkCrop"><label for="crop">Crop</label><input type="checkbox" name="crop" id="crop" checked>
 			</div>
 			<div class="centerContainer"><label for="cropSelect">Center</label><input type="checkbox" name="cropSelect"

@@ -21,11 +21,16 @@ body {
 }
 
 .centerContainer {
-	/*DELETE ME*/
-	/* display: none; */
+	display: none;
 	z-index: 10;
-	background-color: #081a2bab;
+	background-color: #081a2b;
 	border-radius: 20px;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+#cropSelect {
+	width: 0.7vmax;
 }
 
 h1 {
@@ -52,22 +57,24 @@ h3 {
 #input {
 	width: 350px;
 }
+/* label {
+	cursor: pointer;
+} */
 label[for="input"],
 label[for="output"] {
 	font-size: var(--responsive);
 }
-label[for="maxOutput"] {
-	margin: 0 auto;
-	margin-top: 0.5rem;
-	text-align: center;
-	display: block;
+.maxSizeContainer {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	justify-content: center;
 }
+
 #maxOutput {
-	width: 100px;
+	width: 70px;
 	text-align: center;
-	margin: 0 auto;
 	display: block;
-	margin-bottom: 0.5rem;
 }
 .qualityContainer {
 	display: flex;
@@ -93,6 +100,7 @@ label[for="quality"] {
 	flex-direction: column;
 	gap: 5px;
 }
+
 .run,
 .download {
 	width: fit-content;
@@ -135,6 +143,9 @@ label[for="quality"] {
 	justify-content: center;
 	gap: 5px;
 	flex-direction: column;
+	z-index: 4;
+	border-radius: 15px;
+	background-color: #081a2b;
 }
 #cropVals > * {
 	display: flex;
