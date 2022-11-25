@@ -65,11 +65,13 @@ const dragElement = (ele) => {
 		g.outputValues[g.currentStep].topOffset = parseInt(selector.style.top);
 		g.outputValues[g.currentStep].width = parseInt(selector.style.width);
 		g.outputValues[g.currentStep].height = parseInt(selector.style.height);
+		fixOverflow();
 		if (document.getElementById("cropSelect").checked)
 			document.getElementById("cropSelect").checked = false;
 	}
 };
-const fixOverflow = (selector, image, canvas) => {
+const fixOverflow = (selector = g.selector, image = g.img, canvas) => {
+	if (!selector.style.left) selector.style.left = 0;
 	if (
 		parseInt(selector.style.left) + parseInt(selector.style.width) >
 		image.width
@@ -84,7 +86,7 @@ const fixOverflow = (selector, image, canvas) => {
 		g.cropSizeLabel.textContent = g.cropSizeRange.value + "%";
 		centerSelector();
 	}
-
+	if (!selector.style.top) selector.style.top = 0;
 	if (
 		parseInt(selector.style.top) + parseInt(selector.style.height) >
 		image.height
@@ -179,7 +181,7 @@ const handleCropping = ({
 	g.selector.style.height =
 		canvas.height * (g.cropSizeRange.value / 100) + "px";
 
-	fixOverflow(g.selector, image, canvas);
+	fixOverflow((selector = g.selector), (image = g.img), (canvas = g.canvas));
 
 	if (!g.outputValues[g.currentStep])
 		g.outputValues[g.currentStep] = {

@@ -68,6 +68,7 @@ const resizer = (
 					for (let i = 0; i < arrayOfRatios.length; i++) {
 						const ratio = arrayOfRatios[i];
 						const canvas = document.createElement("canvas");
+						g.canvas = canvas;
 						const context = canvas.getContext("2d");
 						const unit =
 							ratio.w > ratio.h
@@ -189,6 +190,9 @@ const resizer = (
 							g.download.style.display = "block";
 						}
 						g.currentStep = null;
+						g.cropSizeRange.onchange = ({ target }) => {
+							g.cropSizeLabel.innerText = target.value + "%";
+						};
 						g.qualityContainer.style.display = "flex";
 						g.maxOutputContainer.style.display = "flex";
 						g.input.style.display = "flex";
@@ -209,6 +213,7 @@ const resizer = (
 			for (let i = 0; i < arrayOfRatios.length; i++) {
 				const ratio = arrayOfRatios[i];
 				const canvas = document.createElement("canvas");
+				g.canvas = canvas;
 				const context = canvas.getContext("2d");
 				const unit =
 					ratio.w > ratio.h ? maxOutputPxs / ratio.w : maxOutputPxs / ratio.h;
@@ -274,6 +279,9 @@ const resizer = (
 					g.download.style.display = "block";
 				}
 				g.currentStep = null;
+				g.cropSizeRange.onchange = ({ target }) => {
+					g.cropSizeLabel.innerText = target.value + "%";
+				};
 				g.qualityContainer.style.display = "flex";
 				g.maxOutputContainer.style.display = "flex";
 				g.input.style.display = "flex";
