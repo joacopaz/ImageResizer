@@ -162,10 +162,13 @@ const handleCropping = ({
 	g.loader.style.opacity = 0;
 
 	resizeDrag.onmousedown = (e) => {
+		e = e || window.event;
+		e.preventDefault();
 		let initialX = e.clientX;
 		let initialY = e.clientY;
 		g.selector.onmousedown = null;
 		document.onmousemove = (e) => {
+			e = e || window.event;
 			e.preventDefault();
 			const xOffset = e.clientX - initialX;
 			const yOffset = e.clientY - initialY;
