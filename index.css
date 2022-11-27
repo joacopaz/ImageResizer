@@ -226,6 +226,10 @@ img {
 }
 .resizeDrag:hover {
 	cursor: se-resize;
+	background-image: url("./resizer-hover-active.png");
+}
+.resizeDrag:active {
+	cursor: se-resize;
 	background-image: url("./resizer-hover.png");
 }
 .selector {

@@ -55,6 +55,13 @@ const g = {
 	download: null,
 	// Loader ref
 	loader: document.querySelector("#loading"),
+	// canvas ref
+	canvas: null,
+	compensator: {
+		originalW: null,
+		originalH: null,
+		ratio: null,
+	},
 };
 
 // Onload events

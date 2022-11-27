@@ -118,7 +118,7 @@ const resizer = (
 							g.outputValues[i].width = 0;
 						if (Number.isNaN(g.outputValues[i].height))
 							g.outputValues[i].height = 0;
-
+					
 						context.drawImage(
 							preproImg,
 							g.outputValues[i].leftOffset, // new X coordinate to start crop on original

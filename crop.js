@@ -1,3 +1,4 @@
+// Center selector from left and top
 const centerSelector = () => {
 	if (!g.outputValues[g.currentStep]) return;
 	g.outputValues[g.currentStep].leftOffset = Math.floor(
@@ -10,18 +11,27 @@ const centerSelector = () => {
 	g.selector.style.top = g.outputValues[g.currentStep].topOffset + "px";
 };
 
+// Handle change in crop size range input
+const handleCropSizeChange = ({ target }) => {
+	g.cropSizeLabel.innerText = target.value + "%";
+	const index = g.cropSizeRange.value / 100;
+	g.selector.style.width = g.canvas.width * index + "px";
+	g.selector.style.height = g.canvas.height * index + "px";
+	fixOverflow(g.selector, g.image, g.canvas);
+	if (g.outputValues[g.currentStep])
+		g.outputValues[g.currentStep].width = parseInt(g.selector.style.width);
+	if (g.outputValues[g.currentStep])
+		g.outputValues[g.currentStep].height = parseInt(g.selector.style.height);
+};
+
+// Enable dragging by adding listeners onmousedown listener
 const dragElement = (ele) => {
 	let pos1 = 0,
 		pos2 = 0,
 		pos3 = 0,
 		pos4 = 0;
-	if (document.getElementById(ele.id + "header")) {
-		// if present, the header is where you move the DIV from:
-		document.getElementById(ele.id + "header").onmousedown = dragMouseDown;
-	} else {
-		// otherwise, move the DIV from anywhere inside the DIV:
-		ele.onmousedown = dragMouseDown;
-	}
+
+	ele.onmousedown = dragMouseDown;
 
 	function dragMouseDown(e) {
 		e = e || window.event;
@@ -69,21 +79,36 @@ const dragElement = (ele) => {
 			document.getElementById("cropSelect").checked = false;
 	}
 };
-const fixOverflow = (selector = g.selector, image = g.img, canvas) => {
+
+// Fix overflowing borders into the container to prevent overcrop
+const fixOverflow = (
+	selector = g.selector,
+	image = g.img,
+	canvas = g.canvas
+) => {
+	if (!g.outputValues[g.currentStep]) return;
 	if (!selector.style.left) selector.style.left = 0;
 	if (
 		parseInt(selector.style.left) + parseInt(selector.style.width) >
 		image.width
 	) {
 		console.log("Overflow Width! Adjusting");
-		const overflow = parseInt(selector.style.width) - image.width;
+		const overflow =
+			parseInt(selector.style.left) +
+			parseInt(selector.style.width) -
+			image.width;
+		console.log("Xoverflow:" + overflow);
 		const ratio = 1 - overflow / parseInt(selector.style.width);
 		g.cropSizeRange.value = g.cropSizeRange.value * ratio;
 		selector.style.height =
 			canvas.height * (g.cropSizeRange.value / 100) + "px";
 		selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
 		g.cropSizeLabel.textContent = g.cropSizeRange.value + "%";
-		centerSelector();
+		g.outputValues[g.currentStep].leftOffset =
+			g.selectorContainer.offsetWidth - g.selector.offsetWidth - overflow >= 0
+				? g.selectorContainer.offsetWidth - g.selector.offsetWidth - overflow
+				: g.selectorContainer.offsetWidth - g.selector.offsetWidth;
+		g.selector.style.left = g.outputValues[g.currentStep].leftOffset + "px";
 	}
 	if (!selector.style.top) selector.style.top = 0;
 	if (
@@ -91,14 +116,22 @@ const fixOverflow = (selector = g.selector, image = g.img, canvas) => {
 		image.height
 	) {
 		console.log("Overflow Height! Adjusting");
-		const overflow = parseInt(selector.style.height) - image.height;
+		const overflow =
+			parseInt(selector.style.top) +
+			parseInt(selector.style.height) -
+			image.height;
+		console.log("Yoverflow:" + overflow);
 		const ratio = 1 - overflow / parseInt(selector.style.height);
 		g.cropSizeRange.value = g.cropSizeRange.value * ratio;
 		selector.style.height =
 			canvas.height * (g.cropSizeRange.value / 100) + "px";
 		selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
 		g.cropSizeLabel.textContent = g.cropSizeRange.value + "%";
-		centerSelector();
+		g.outputValues[g.currentStep].topOffset =
+			g.selectorContainer.offsetTop - g.selector.offsetHeight - overflow >= 0
+				? g.selectorContainer.offsetHeight - g.selector.offsetHeight - overflow
+				: g.selectorContainer.offsetHeight - g.selector.offsetHeight;
+		g.selector.style.left = g.outputValues[g.currentStep].leftOffset + "px";
 	}
 };
 
@@ -122,6 +155,17 @@ const handleCropping = ({
 		g.input.style.display = "none";
 	}
 	g.run.textContent = "Select";
+
+	if (canvas.width > 800 || canvas.height > 800) {
+		g.compensator = {
+			originalW: canvas.width,
+			originalH: canvas.height,
+			ratio: canvas.width > 800 ? 800 / canvas.width : 800 / canvas.height,
+		};
+		console.log(g.compensator);
+		canvas.width = g.compensator.originalW * g.compensator.ratio;
+		canvas.height = g.compensator.originalH * g.compensator.ratio;
+	}
 
 	if (!g.observer) {
 		g.observer = new IntersectionObserver(
@@ -196,17 +240,7 @@ const handleCropping = ({
 	g.outputValues[g.currentStep].width = parseInt(g.selector.style.width);
 	g.outputValues[g.currentStep].height = parseInt(g.selector.style.height);
 
-	g.cropSizeRange.onchange = ({ target }) => {
-		g.cropSizeLabel.innerText = target.value + "%";
-		const index = g.cropSizeRange.value / 100;
-		g.selector.style.width = canvas.width * index + "px";
-		g.selector.style.height = canvas.height * index + "px";
-		fixOverflow(g.selector, image, canvas);
-		if (g.outputValues[g.currentStep])
-			g.outputValues[g.currentStep].width = parseInt(g.selector.style.width);
-		if (g.outputValues[g.currentStep])
-			g.outputValues[g.currentStep].height = parseInt(g.selector.style.height);
-	};
+	g.cropSizeRange.onchange = handleCropSizeChange;
 
 	document.querySelector("#cropSelect").onchange = (e) => {
 		if (!e.target.checked) return;
@@ -263,10 +297,25 @@ const handleCropping = ({
 	output.appendChild(header);
 	output.style.flexDirection = "column";
 	g.loader.style.opacity = 0;
-	g.selector.draggable = true;
 
-	// resizeDrag.onmouseover((e) => (g.selector.onmousedown = (e) => {}));
-	// resizeDrag.onmouseout((e) => dragElement(g.selector));
+	resizeDrag.onmousedown = (e) => {
+		let initialX = e.clientX;
+		let initialY = e.clientY;
+		g.selector.onmousedown = null;
+		document.onmousemove = (e) => {
+			const xOffset = e.clientX - initialX;
+			const yOffset = e.clientY - initialY;
+			const totalDiff = (xOffset + yOffset) / 30;
+			g.cropSizeRange.valueAsNumber += totalDiff;
+			handleCropSizeChange({ target: g.cropSizeRange });
+			initialX = e.clientX;
+			initialY = e.clientY;
+		};
+		document.onmouseup = (e) => {
+			dragElement(g.selector);
+			document.onmousemove = null;
+		};
+	};
 
 	dragElement(g.selector);
 	g.selector.scrollIntoView({
