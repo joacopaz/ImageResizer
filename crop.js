@@ -166,6 +166,7 @@ const handleCropping = ({
 		let initialY = e.clientY;
 		g.selector.onmousedown = null;
 		document.onmousemove = (e) => {
+			e.preventDefault();
 			const xOffset = e.clientX - initialX;
 			const yOffset = e.clientY - initialY;
 			const totalDiff = (xOffset + yOffset) / 9;
