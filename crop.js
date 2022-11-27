@@ -27,9 +27,8 @@ const dragElement = (ele) => {
 		e = e || window.event;
 		e.preventDefault();
 		// get the mouse cursor position at startup:
-		pos3 = e.clientX;
-		pos4 = e.clientY;
-		// console.log(pos1, pos2, pos3, pos4);
+		pos3 = e.clientX; // mouseX
+		pos4 = e.clientY; // mouseY
 		document.onmouseup = closeDragElement;
 		// call a function whenever the cursor moves:
 		document.onmousemove = elementDrag;
@@ -169,17 +168,19 @@ const handleCropping = ({
 	g.selectorContainer = document.createElement("div");
 	g.selectorContainer.classList.add("imgContainer");
 	g.selectorContainer.classList.add("prev");
-	// container.classList.add("preview");
 	g.selectorContainer.appendChild(image);
 	g.img = image;
 	g.selector = document.createElement("div");
-	// test
-	const inset = document.createElement("div");
-	inset.classList.add("inset");
 	g.selector.classList.add("selector");
 	g.selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
 	g.selector.style.height =
 		canvas.height * (g.cropSizeRange.value / 100) + "px";
+
+	const inset = document.createElement("div");
+	inset.classList.add("inset");
+
+	const resizeDrag = document.createElement("div");
+	resizeDrag.classList.add("resizeDrag");
 
 	fixOverflow((selector = g.selector), (image = g.img), (canvas = g.canvas));
 
@@ -253,7 +254,7 @@ const handleCropping = ({
 
 	g.selectorContainer.appendChild(g.selector);
 	g.selector.appendChild(inset);
-
+	inset.appendChild(resizeDrag);
 	const header = document.createElement("h3");
 	header.textContent = `Preview ${ratio.w}x${ratio.h} ${i + 1}/${
 		arrayOfRatios.length
@@ -263,6 +264,9 @@ const handleCropping = ({
 	output.style.flexDirection = "column";
 	g.loader.style.opacity = 0;
 	g.selector.draggable = true;
+
+	// resizeDrag.onmouseover((e) => (g.selector.onmousedown = (e) => {}));
+	// resizeDrag.onmouseout((e) => dragElement(g.selector));
 
 	dragElement(g.selector);
 	g.selector.scrollIntoView({

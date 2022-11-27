@@ -213,6 +213,21 @@ img {
 	top: 50%;
 	transform: translate(0, -50%);
 }
+.resizeDrag {
+	width: 3vmax;
+	height: 3vmax;
+	background-image: url("./resizer.png");
+	background-size: 3vmax 3vmax;
+	z-index: 60;
+	position: absolute;
+	bottom: -0.5vmax;
+	right: -0.5vmax;
+	background-size: cover;
+}
+.resizeDrag:hover {
+	cursor: se-resize;
+	background-image: url("./resizer-hover.png");
+}
 .selector {
 	box-sizing: border-box;
 	left: 0;
