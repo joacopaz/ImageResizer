@@ -118,7 +118,12 @@ const resizer = (
 							g.outputValues[i].width = 0;
 						if (Number.isNaN(g.outputValues[i].height))
 							g.outputValues[i].height = 0;
-					
+						if (g.compensator.ratio) {
+							g.outputValues[i].leftOffset /= g.compensator.ratio;
+							g.outputValues[i].topOffset /= g.compensator.ratio;
+							g.outputValues[i].width /= g.compensator.ratio;
+							g.outputValues[i].height /= g.compensator.ratio;
+						}
 						context.drawImage(
 							preproImg,
 							g.outputValues[i].leftOffset, // new X coordinate to start crop on original
@@ -190,13 +195,12 @@ const resizer = (
 							g.download.style.display = "block";
 						}
 						g.currentStep = null;
-						g.cropSizeRange.onchange = ({ target }) => {
-							g.cropSizeLabel.innerText = target.value + "%";
-						};
 						g.qualityContainer.style.display = "flex";
 						g.maxOutputContainer.style.display = "flex";
 						g.input.style.display = "flex";
 						g.isCropContainer.style.display = "flex";
+						g.cropSizeContainer.style.display = "none";
+						g.centerContainer.style.display = "none";
 						g.outputValues = [];
 						g.download.onclick = () => {
 							saveAs(zip, `${name}.zip`);
@@ -279,9 +283,6 @@ const resizer = (
 					g.download.style.display = "block";
 				}
 				g.currentStep = null;
-				g.cropSizeRange.onchange = ({ target }) => {
-					g.cropSizeLabel.innerText = target.value + "%";
-				};
 				g.qualityContainer.style.display = "flex";
 				g.maxOutputContainer.style.display = "flex";
 				g.input.style.display = "flex";

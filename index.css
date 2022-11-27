@@ -199,7 +199,7 @@ img {
 	content: "";
 	width: 0px;
 	height: 100%;
-	border: yellow dashed 0.1vmax;
+	border: yellow dashed 1px;
 	position: absolute;
 	left: 50%;
 	transform: translate(-50%);
@@ -208,43 +208,38 @@ img {
 	content: "";
 	width: 100%;
 	height: 0px;
-	border: yellow dashed 0.1vmax;
+	border: yellow dashed 1px;
 	position: absolute;
 	top: 50%;
 	transform: translate(0, -50%);
 }
 .resizeDrag {
-	width: 3vmax;
-	height: 3vmax;
+	width: 20px;
+	height: 20px;
 	background-image: url("./resizer.png");
 	background-size: 3vmax 3vmax;
 	z-index: 60;
 	position: absolute;
-	bottom: -0.5vmax;
-	right: -0.5vmax;
+	bottom: -3px;
+	right: -3px;
 	background-size: cover;
 }
 .resizeDrag:hover {
 	cursor: se-resize;
-	background-image: url("./resizer-hover-active.png");
+	background-image: url("./resizer-hover.png");
 }
 .resizeDrag:active {
 	cursor: se-resize;
-	background-image: url("./resizer-hover.png");
+	background-image: url("./resizer-hover-active.png");
 }
 .selector {
 	box-sizing: border-box;
 	left: 0;
 	top: 0;
 	position: absolute;
-	border: rgb(237, 105, 29) dashed 0.5vmax;
-	/* filter: drop-shadow(0px 0px 1000px black); */
 	backdrop-filter: brightness(2);
+	border: orange dashed 3px;
 	z-index: 2;
-	/* background-image: url("./crosshair.png");
-	background-size: 20% 20%;
-	background-repeat: no-repeat;
-	background-position: center; */
 }
 .selector:hover {
 	cursor: grab;

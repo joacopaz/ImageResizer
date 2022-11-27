@@ -107,6 +107,3 @@ g.isCrop.onchange = ({ target }) => {
 		g.centerContainer.style.display = target.checked ? "flex" : "none";
 	}
 };
-g.cropSizeRange.onchange = ({ target }) => {
-	g.cropSizeLabel.innerText = target.value + "%";
-};
