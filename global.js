@@ -1,4 +1,12 @@
 const g = {
+	// File to write
+	fileName: null,
+	// Type to write
+	fileType: null,
+	// Change image to crop container
+	rechooseContainer: document.querySelector(".rechooseContainer"),
+	// Span for rechoose ratio
+	rechooseRatio: document.querySelector("#rechoose"),
 	// Quality Label
 	qualityTag: document.querySelector("#quality"),
 	// Quality value
@@ -88,8 +96,6 @@ g.maxOutputField.onkeydown = (e) => {
 g.maxOutputField.oninput = ({ target }) => (g.maxOutput = target.valueAsNumber);
 
 g.input.onchange = () => {
-	g.currentStep = null;
-	g.outputValues = [];
 	resizer();
 };
 g.qualityRange.onchange = ({ target }) => {
