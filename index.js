@@ -32,6 +32,12 @@ const resizer = (
 	// We get the file type to rebuild the output file
 	const type = file.type.match(/.+\/(.+)/)[1];
 	g.fileType = type;
+	if (!g.alert && type === "png") {
+		g.alert = true;
+		alert(
+			`Image is a PNG, png format does not allow quality compression (it's a losless format)`
+		);
+	}
 	const reader = new FileReader();
 	reader.readAsDataURL(file);
 
