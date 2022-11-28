@@ -35,7 +35,7 @@ const resizer = (
 	if (!g.alert && type === "png") {
 		g.alert = true;
 		alert(
-			`Image is a PNG, png format does not allow quality compression (it's a losless format)`
+			`Image is a PNG. This format does not allow quality compression (it's a losless format)`
 		);
 	}
 	const reader = new FileReader();
