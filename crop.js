@@ -9,7 +9,7 @@ const handleCropping = ({
 }) => {
 	if (g.currentStep || g.currentStep === 0) g.currentStep += 1;
 	if (!g.currentStep) {
-		g.qualityContainer.style.display = "none";
+		// g.qualityContainer.style.display = "none";
 		g.maxOutputContainer.style.display = "none";
 		g.isCropContainer.style.display = "none";
 		g.currentStep = 0;

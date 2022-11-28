@@ -141,9 +141,12 @@ const resizer = (
 							canvas.width, // newWidth
 							canvas.height // newHeight
 						);
+						console.log(
+							`Writing: image/${g.outputValues[i].type} at ${g.outputValues[i].quality} quality`
+						);
 						const newImgUrl = context.canvas.toDataURL(
 							`image/${g.outputValues[i].type}`,
-							`${g.outputValues[i].quality}`
+							`1` //${g.outputValues[i].quality}
 						);
 						const newImg = document.createElement("img");
 						newImg.src = newImgUrl; // end result for VLS implementation

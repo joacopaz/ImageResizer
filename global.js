@@ -100,7 +100,12 @@ g.input.onchange = () => {
 };
 g.qualityRange.onchange = ({ target }) => {
 	g.quality = target.value / 100;
-	g.qualityTag.textContent = `${g.quality * 100}%`;
+	g.qualityTag.textContent = `${Math.round(g.quality * 100)}%`;
+	if (!g.currentStep) {
+		g.currentStep = null;
+	}
+	if (g.currentStep) g.currentStep -= 1;
+	resizer();
 };
 
 g.run.onclick = (e) => {
