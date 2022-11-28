@@ -66,7 +66,7 @@ const resizer = (
 					canvasPrepro.height
 				);
 				const preproImgURL = contextPrepro.canvas.toDataURL(
-					`image/${g.type}`,
+					`image/${type}`,
 					qualityPercent
 				);
 				const preproImg = document.createElement("img");
@@ -141,10 +141,9 @@ const resizer = (
 							canvas.width, // newWidth
 							canvas.height // newHeight
 						);
-
 						const newImgUrl = context.canvas.toDataURL(
-							`image/${g.type}`,
-							qualityPercent
+							`image/${g.outputValues[i].type}`,
+							`${g.outputValues[i].quality}`
 						);
 						const newImg = document.createElement("img");
 						newImg.src = newImgUrl; // end result for VLS implementation
@@ -237,10 +236,7 @@ const resizer = (
 				canvas.height = unit * ratio.h;
 
 				context.drawImage(image, 0, 0, canvas.width, canvas.height);
-				const newImgUrl = context.canvas.toDataURL(
-					`image/${type}`,
-					qualityPercent
-				);
+				const newImgUrl = context.canvas.toDataURL(`image/${type}`, 1);
 				const newImg = document.createElement("img");
 				newImg.src = newImgUrl; // end result for VLS implementation
 
