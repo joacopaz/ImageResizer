@@ -26,7 +26,6 @@ const handleCropping = ({
 			ratio: image.width > 500 ? 500 / image.width : 500 / image.height,
 		};
 		image.width = g.compensator.originalW * g.compensator.ratio;
-		console.log(`newW: ${image.width}`);
 		image.height = g.compensator.originalH * g.compensator.ratio;
 		canvas.width *= g.compensator.ratio;
 		canvas.height *= g.compensator.ratio;
