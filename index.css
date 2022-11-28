@@ -1,5 +1,5 @@
 :root {
-	--responsive: 1vmax;
+	--responsive: 1rem;
 }
 
 * {
@@ -13,10 +13,8 @@ body {
 	background-repeat: no-repeat;
 	background-position: center 95%;
 	background-attachment: unset;
-	background-size: 4vmax 4vmax;
-	height: 97vh;
-	width: 98vw;
-	min-height: 970px;
+	background-size: 70px 70px;
+	min-height: 100vh;
 	color: white;
 }
 
@@ -28,9 +26,6 @@ body {
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-}
-#cropSelect {
-	width: 0.7vmax;
 }
 
 h1 {
@@ -70,7 +65,10 @@ label[for="output"] {
 	align-items: center;
 	justify-content: center;
 }
-
+.rechooseContainer {
+	color: yellow;
+	display: none;
+}
 #maxOutput {
 	width: 70px;
 	text-align: center;
@@ -255,8 +253,8 @@ img {
 
 #loading {
 	position: fixed;
-	width: 6vmax;
-	height: 6vmax;
+	width: 100px;
+	height: 100px;
 	padding: 1rem;
 	left: 50%;
 	top: 30%;
@@ -271,7 +269,7 @@ img {
 	opacity: 0;
 	pointer-events: none;
 	z-index: 10;
-	gap: 1vmax;
+	gap: 15px;
 }
 .lds-ring {
 	display: flex;

@@ -13,16 +13,25 @@ const resizer = (
 	// Start loading animation
 	g.loader.style.opacity = 100;
 
+	g.input.onchange = () => {
+		if (!g.currentStep) {
+			g.currentStep = null;
+		}
+		if (g.currentStep) g.currentStep -= 1;
+		resizer();
+	};
+
 	// Since this is a sketch of the function, we delete the output contents before rendering new ones just in case we re-run the function multiple times
 	outputContainer.innerHTML = "";
 	document.getElementById("download-container").innerHTML = "";
 	const file = inputContainer.files[0];
 	// We get the file name to rebuild the output file
 	const name = file.name.match(/(.+)\./)[1];
+	g.fileName = name;
 
 	// We get the file type to rebuild the output file
 	const type = file.type.match(/.+\/(.+)/)[1];
-
+	g.fileType = type;
 	const reader = new FileReader();
 	reader.readAsDataURL(file);
 
@@ -36,10 +45,9 @@ const resizer = (
 
 		// results is created for this example to download a zip file, delete if no download is intended
 		const results = [];
+		g.results = results;
 		image.onload = ({ target }) => {
 			if (g.isCrop.checked) {
-				// EXPERIMENTING -----------------------------------------------------
-				// preprocessing image to get scaled down preview image for cropping
 				outputContainer.style.alignItems = "center";
 				outputContainer.style.justifyContent = "center";
 				const canvasPrepro = document.createElement("canvas");
@@ -58,7 +66,7 @@ const resizer = (
 					canvasPrepro.height
 				);
 				const preproImgURL = contextPrepro.canvas.toDataURL(
-					`image/${type}`,
+					`image/${g.type}`,
 					qualityPercent
 				);
 				const preproImg = document.createElement("img");
@@ -76,6 +84,10 @@ const resizer = (
 								: maxOutputPxs / ratio.h;
 						canvas.width = unit * ratio.w;
 						canvas.height = unit * ratio.h;
+
+						g.rechooseContainer.style.display = "flex";
+						g.rechooseRatio.innerText = ` ${ratio.w}x${ratio.h}`;
+
 						if (!g.currentStep || g.currentStep + 1 < arrayOfRatios.length) {
 							if (!g.currentStep && g.currentStep !== 0 && i === 0) {
 								return handleCropping({
@@ -100,14 +112,6 @@ const resizer = (
 							if (g.currentStep + 1 !== i) {
 								continue;
 							}
-						} else {
-							if (i + 1 === arrayOfRatios.length) {
-								let string;
-								g.outputValues.forEach(
-									(e) =>
-										(string += `L: ${e.leftOffset} T: ${e.topOffset} W: ${e.width} H: ${e.height}`)
-								);
-							}
 						}
 
 						if (Number.isNaN(g.outputValues[i].leftOffset))
@@ -118,14 +122,16 @@ const resizer = (
 							g.outputValues[i].width = 0;
 						if (Number.isNaN(g.outputValues[i].height))
 							g.outputValues[i].height = 0;
-						if (g.compensator.ratio) {
-							g.outputValues[i].leftOffset /= g.compensator.ratio;
-							g.outputValues[i].topOffset /= g.compensator.ratio;
-							g.outputValues[i].width /= g.compensator.ratio;
-							g.outputValues[i].height /= g.compensator.ratio;
+						if (g.outputValues[i].compensator.ratio) {
+							g.outputValues[i].leftOffset /=
+								g.outputValues[i].compensator.ratio;
+							g.outputValues[i].topOffset /=
+								g.outputValues[i].compensator.ratio;
+							g.outputValues[i].width /= g.outputValues[i].compensator.ratio;
+							g.outputValues[i].height /= g.outputValues[i].compensator.ratio;
 						}
 						context.drawImage(
-							preproImg,
+							g.outputValues[i].img,
 							g.outputValues[i].leftOffset, // new X coordinate to start crop on original
 							g.outputValues[i].topOffset, // new Y coordinate to start crop on original
 							g.outputValues[i].width, // cropWidth
@@ -137,14 +143,19 @@ const resizer = (
 						);
 
 						const newImgUrl = context.canvas.toDataURL(
-							`image/${type}`,
+							`image/${g.type}`,
 							qualityPercent
 						);
 						const newImg = document.createElement("img");
 						newImg.src = newImgUrl; // end result for VLS implementation
 
 						// We now have a new image with the specific aspect ratio in newImg, we could now push it to the server and end the function. In this specific case, we will append to show a preview and generate a downloadable ZIP file.
-						results.push({ ratio: `${ratio.w}x${ratio.h}`, url: newImgUrl });
+						results.push({
+							ratio: `${ratio.w}x${ratio.h}`,
+							url: newImgUrl,
+							type: g.outputValues[i].type,
+							name: g.outputValues[i].name,
+						});
 						const container = document.createElement("div");
 						container.classList.add("imgContainer");
 						container.classList.add("finished");
@@ -171,15 +182,15 @@ const resizer = (
 					}
 					// Creating Zip file for Listing Service use
 					const zip = new JSZip();
-					results.forEach((result) =>
+					results.forEach((result) => {
 						zip.file(
-							`${name}-${result.ratio}.${type}`,
+							`${result.name}-${result.ratio}.${result.type}`,
 							urlToPromise(result.url),
 							{
 								binary: true,
 							}
-						)
-					);
+						);
+					});
 					zip.generateAsync({ type: "blob" }).then(function callback(zip) {
 						if (g.observer) {
 							g.observer.disconnect();
@@ -194,12 +205,13 @@ const resizer = (
 						} else {
 							g.download.style.display = "block";
 						}
+						g.rechooseContainer.style.display = "none";
+						g.rechooseRatio.innerText = ``;
 						g.currentStep = null;
 						g.qualityContainer.style.display = "flex";
 						g.maxOutputContainer.style.display = "flex";
-						g.input.style.display = "flex";
+						// g.input.style.display = "flex";
 						g.isCropContainer.style.display = "flex";
-						g.cropSizeContainer.style.display = "none";
 						g.centerContainer.style.display = "none";
 						g.outputValues = [];
 						g.download.onclick = () => {
@@ -221,8 +233,6 @@ const resizer = (
 				const context = canvas.getContext("2d");
 				const unit =
 					ratio.w > ratio.h ? maxOutputPxs / ratio.w : maxOutputPxs / ratio.h;
-				const unitX = maxOutputPxs / ratio.w;
-				const unitY = maxOutputPxs / ratio.h;
 				canvas.width = unit * ratio.w;
 				canvas.height = unit * ratio.h;
 
@@ -283,6 +293,8 @@ const resizer = (
 					g.download.style.display = "block";
 				}
 				g.currentStep = null;
+				g.rechooseContainer.style.display = "none";
+				g.rechooseRatio.innerText = ``;
 				g.qualityContainer.style.display = "flex";
 				g.maxOutputContainer.style.display = "flex";
 				g.input.style.display = "flex";

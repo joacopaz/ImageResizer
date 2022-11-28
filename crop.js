@@ -14,8 +14,7 @@ const handleCropping = ({
 		g.isCropContainer.style.display = "none";
 		g.currentStep = 0;
 		g.centerContainer.style.display = "flex";
-		g.cropSizeContainer.style.display = "flex";
-		g.input.style.display = "none";
+		// g.cropSizeContainer.style.display = "flex";
 	}
 	g.run.textContent = "Select";
 	g.img = image;
@@ -26,7 +25,6 @@ const handleCropping = ({
 			ratio: image.width > 500 ? 500 / image.width : 500 / image.height,
 		};
 		image.width = g.compensator.originalW * g.compensator.ratio;
-		console.log(`newW: ${image.width}`);
 		image.height = g.compensator.originalH * g.compensator.ratio;
 		canvas.width *= g.compensator.ratio;
 		canvas.height *= g.compensator.ratio;
@@ -36,18 +34,19 @@ const handleCropping = ({
 			(entry) => {
 				if (!entry[0].isIntersecting) {
 					g.run.style.position = "fixed";
-					g.run.style.top = "0.2vh";
-					g.run.style.left = "40vmax";
+					g.run.style.top = "3%";
+					g.run.style.left = "45%";
 					g.centerContainer.style.position = "fixed";
-					g.centerContainer.style.top = "0.2vh";
-					g.centerContainer.style.fontSize = "1vmax";
+					g.centerContainer.style.top = "3%";
+					g.centerContainer.style.left = "30%";
+					g.centerContainer.style.fontSize = "1rem";
 					g.centerContainer.style.padding = "1rem";
 					g.centerContainer.style.border = "white 1px solid";
 
 					g.cropSizeContainer.style.position = "fixed";
-					g.cropSizeContainer.style.top = "0.2vh";
-					g.cropSizeContainer.style.right = "32vmax";
-					g.cropSizeContainer.style.fontSize = "1vmax";
+					g.cropSizeContainer.style.top = "3%";
+					g.cropSizeContainer.style.left = "60%";
+					g.cropSizeContainer.style.fontSize = "1rem";
 					g.cropSizeContainer.style.padding = "1rem";
 					g.cropSizeContainer.style.border = "white 1px solid";
 				} else if (entry[0].isIntersecting) {
@@ -57,12 +56,13 @@ const handleCropping = ({
 						g.run.style.left = "";
 						g.centerContainer.style.position = "";
 						g.centerContainer.style.top = "";
+						g.centerContainer.style.left = "";
 						g.centerContainer.style.fontSize = "";
 						g.centerContainer.style.padding = "";
 						g.centerContainer.style.border = "";
 						g.cropSizeContainer.style.position = "";
 						g.cropSizeContainer.style.top = "";
-						g.cropSizeContainer.style.right = "";
+						g.cropSizeContainer.style.left = "";
 						g.cropSizeContainer.style.fontSize = "";
 						g.cropSizeContainer.style.padding = "";
 						g.cropSizeContainer.style.border = "";
@@ -71,7 +71,7 @@ const handleCropping = ({
 			},
 			{ rootMargin: "0px", threshold: 1.0 }
 		);
-		g.observer.observe(document.querySelector("fieldset"));
+		// g.observer.observe(g.input);
 	}
 	g.selectorContainer = document.createElement("div");
 	g.selectorContainer.classList.add("imgContainer");
@@ -91,14 +91,17 @@ const handleCropping = ({
 
 	fixOverflow((selector = g.selector), (image = g.img), (canvas = g.canvas));
 
-	if (!g.outputValues[g.currentStep])
-		g.outputValues[g.currentStep] = {
-			leftOffset: 0,
-			topOffset: 0,
-			width: 0,
-			height: 0,
-			quality: g.quality,
-		};
+	g.outputValues[g.currentStep] = {
+		leftOffset: 0,
+		topOffset: 0,
+		width: 0,
+		height: 0,
+		quality: g.quality,
+		img: g.img,
+		type: g.fileType,
+		name: g.fileName,
+		compensator: { ...g.compensator },
+	};
 
 	g.outputValues[g.currentStep].width = parseInt(g.selector.style.width);
 	g.outputValues[g.currentStep].height = parseInt(g.selector.style.height);
@@ -191,7 +194,6 @@ const handleCropping = ({
 		inline: "start",
 	});
 	handleCropSizeChange({ target: g.cropSizeRange });
-	return g.selector;
 };
 
 // Helper functions:
@@ -286,6 +288,7 @@ const fixOverflow = (
 ) => {
 	if (!g.outputValues[g.currentStep]) return;
 	if (!selector.style.left) selector.style.left = 0;
+	if (!selector.style.top) selector.style.top = 0;
 	if (
 		parseInt(selector.style.left) + parseInt(selector.style.width) >
 		image.width
@@ -301,13 +304,10 @@ const fixOverflow = (
 			canvas.height * (g.cropSizeRange.value / 100) + "px";
 		selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
 		g.cropSizeLabel.textContent = g.cropSizeRange.value + "%";
-		g.outputValues[g.currentStep].leftOffset =
-			g.selectorContainer.offsetWidth - g.selector.offsetWidth - overflow >= 0
-				? g.selectorContainer.offsetWidth - g.selector.offsetWidth - overflow
-				: g.selectorContainer.offsetWidth - g.selector.offsetWidth;
+		if (parseInt(selector.style.left) >= 1 && parseInt(selector.style.top) >= 1)
+			g.outputValues[g.currentStep].leftOffset -= overflow;
 		g.selector.style.left = g.outputValues[g.currentStep].leftOffset + "px";
 	}
-	if (!selector.style.top) selector.style.top = 0;
 	if (
 		parseInt(selector.style.top) + parseInt(selector.style.height) >
 		image.height
@@ -323,10 +323,8 @@ const fixOverflow = (
 			canvas.height * (g.cropSizeRange.value / 100) + "px";
 		selector.style.width = canvas.width * (g.cropSizeRange.value / 100) + "px";
 		g.cropSizeLabel.textContent = g.cropSizeRange.value + "%";
-		g.outputValues[g.currentStep].topOffset =
-			g.selectorContainer.offsetTop - g.selector.offsetHeight - overflow >= 0
-				? g.selectorContainer.offsetHeight - g.selector.offsetHeight - overflow
-				: g.selectorContainer.offsetHeight - g.selector.offsetHeight;
-		g.selector.style.left = g.outputValues[g.currentStep].leftOffset + "px";
+		if (parseInt(selector.style.left) >= 1 && parseInt(selector.style.top) >= 1)
+			g.outputValues[g.currentStep].topOffset -= overflow;
+		g.selector.style.top = g.outputValues[g.currentStep].topOffset + "px";
 	}
 };
