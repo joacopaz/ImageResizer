@@ -40,11 +40,7 @@ const resizer = (
 		g.alert = true;
 		g.qualityContainer.style.display = "none";
 
-		if (
-			confirm(
-				"Use special PNG compression? (is slower) If not, no quality compression will apply."
-			)
-		) {
+		if (confirm("Use experimental PNG compression? File Size < Time")) {
 			g.quality = 0.01;
 			g.qualityRange.value = g.quality * 100;
 			CanvasPngCompression.replaceToDataURL();
