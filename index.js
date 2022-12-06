@@ -43,7 +43,11 @@ const resizer = (
 		if (confirm("Use experimental PNG compression? File Size < Time")) {
 			g.quality = 0.01;
 			g.qualityRange.value = g.quality * 100;
-			CanvasPngCompression.replaceToDataURL();
+			CanvasPngCompression.replaceToDataURL({
+				windowBits: 8,
+				chunkSize: 256,
+				strategy: 2,
+			});
 		}
 	}
 	const reader = new FileReader();
