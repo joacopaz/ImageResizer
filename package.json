@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "canvas-png-compression": "^0.0.3"
+  }
+}

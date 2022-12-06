@@ -32,11 +32,23 @@ const resizer = (
 	// We get the file type to rebuild the output file
 	const type = file.type.match(/.+\/(.+)/)[1];
 	g.fileType = type;
+	if (type !== "png") {
+		g.quality = 0.98;
+		g.qualityContainer.style.display = "flex";
+	}
 	if (!g.alert && type === "png") {
 		g.alert = true;
-		alert(
-			`Image is a PNG. This format does not allow quality compression (it's a losless format)`
-		);
+		g.qualityContainer.style.display = "none";
+
+		if (
+			confirm(
+				"Use special PNG compression? (is slower) If not, no quality compression will apply."
+			)
+		) {
+			g.quality = 0.01;
+			g.qualityRange.value = g.quality * 100;
+			CanvasPngCompression.replaceToDataURL();
+		}
 	}
 	const reader = new FileReader();
 	reader.readAsDataURL(file);
@@ -152,7 +164,7 @@ const resizer = (
 						);
 						const newImgUrl = context.canvas.toDataURL(
 							`image/${g.outputValues[i].type}`,
-							`1` //${g.outputValues[i].quality}
+							`${g.outputValues[i].quality}` //${g.outputValues[i].quality}
 						);
 						const newImg = document.createElement("img");
 						newImg.src = newImgUrl; // end result for VLS implementation
@@ -226,6 +238,8 @@ const resizer = (
 							saveAs(zip, `${name}.zip`);
 						};
 						g.loader.style.opacity = "";
+						g.alert = false;
+						CanvasPngCompression.revertToDataURL();
 					});
 				};
 				return;
@@ -245,7 +259,8 @@ const resizer = (
 				canvas.height = unit * ratio.h;
 
 				context.drawImage(image, 0, 0, canvas.width, canvas.height);
-				const newImgUrl = context.canvas.toDataURL(`image/${type}`, 1);
+
+				const newImgUrl = context.canvas.toDataURL(`image/${type}`, g.quality);
 				const newImg = document.createElement("img");
 				newImg.src = newImgUrl; // end result for VLS implementation
 
@@ -309,6 +324,8 @@ const resizer = (
 					saveAs(zip, `${name}.zip`);
 				};
 				g.loader.style.opacity = "";
+				g.alert = false;
+				CanvasPngCompression.revertToDataURL();
 			});
 		};
 	};

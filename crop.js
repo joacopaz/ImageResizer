@@ -180,6 +180,9 @@ const handleCropping = ({
 			handleCropSizeChange({ target: g.cropSizeRange });
 			initialX = e.clientX;
 			initialY = e.clientY;
+			if (g.cropCenter) {
+				centerSelector();
+			}
 		};
 		document.onmouseup = (e) => {
 			dragElement(g.selector);
@@ -275,8 +278,10 @@ const dragElement = (ele) => {
 		g.outputValues[g.currentStep].width = parseInt(selector.style.width);
 		g.outputValues[g.currentStep].height = parseInt(selector.style.height);
 		fixOverflow();
-		if (document.getElementById("cropSelect").checked)
-			document.getElementById("cropSelect").checked = false;
+		if (g.cropCenter) {
+			document.querySelector("#cropSelect").checked = false;
+			g.cropCenter = false;
+		}
 	}
 };
 
